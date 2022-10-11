@@ -1,0 +1,26 @@
+name: Nuget Search
+
+on:   
+  [workflow_dispatch]
+
+jobs:
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0' # SDK Version to use.
+          source-url: https://nuget.pkg.github.com/nuget-AMK-v2/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Nuget Search
+        run: |
+           curl -v -k -X GET https://nuget.pkg.github.com/test-nuget/query -H "AUTHORIZATION: bearer ${{secrets.GITHUB_TOKEN}}"
